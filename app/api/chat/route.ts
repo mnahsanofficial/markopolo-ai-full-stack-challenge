@@ -98,7 +98,7 @@ ${JSON.stringify(recommendation, null, 2)}
           }
           
           // Send final completion signal
-          sendChunk({ content: "[DONE]" })
+          sendChunk({ done: true })
           controller.close()
         }
 

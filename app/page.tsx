@@ -77,19 +77,23 @@ export default function Home() {
           for (const line of lines) {
             if (line.startsWith('data: ')) {
               const data = line.slice(6)
-              if (data === '[DONE]') {
-                setMessages(prev => 
-                  prev.map(msg => 
-                    msg.id === assistantMessage.id 
-                      ? { ...msg, isStreaming: false }
-                      : msg
-                  )
-                )
-                return
-              }
-
+              
               try {
                 const parsed = JSON.parse(data)
+                
+                // Check for completion signal
+                if (parsed.done) {
+                  setMessages(prev => 
+                    prev.map(msg => 
+                      msg.id === assistantMessage.id 
+                        ? { ...msg, isStreaming: false }
+                        : msg
+                    )
+                  )
+                  return
+                }
+                
+                // Handle content updates
                 if (parsed.content) {
                   assistantMessage.content = parsed.content
                   setMessages(prev => 
