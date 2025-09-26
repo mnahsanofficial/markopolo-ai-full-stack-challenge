@@ -48,12 +48,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
               ? 'bg-primary-600 text-white' 
               : 'bg-white border border-gray-200 text-gray-900'
           }`}>
-            {message.isStreaming ? (
-              <div className="flex items-center space-x-2">
-                <span>{message.content}</span>
-                <div className="w-2 h-2 bg-primary-600 rounded-full animate-pulse"></div>
-              </div>
-            ) : isUser ? (
+            {isUser ? (
               <div className="whitespace-pre-wrap">{message.content}</div>
             ) : (
               <div className="prose prose-sm max-w-none">
@@ -122,6 +117,12 @@ export default function ChatMessage({ message }: ChatMessageProps) {
                 >
                   {message.content}
                 </ReactMarkdown>
+                {message.isStreaming && (
+                  <div className="flex items-center space-x-2 mt-2">
+                    <div className="w-2 h-2 bg-primary-600 rounded-full animate-pulse"></div>
+                    <span className="text-sm text-gray-500">AI is thinking...</span>
+                  </div>
+                )}
               </div>
             )}
           </div>
