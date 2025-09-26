@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Send, Plus, Settings, Zap, Database, MessageSquare } from 'lucide-react'
+import { Send, Plus, Settings, Zap, Database, MessageSquare, Bot } from 'lucide-react'
 import ChatMessage from './components/ChatMessage'
 import DataSourceConnector from './components/DataSourceConnector'
 import ChannelSelector from './components/ChannelSelector'
@@ -201,11 +201,27 @@ export default function Home() {
               <ChatMessage key={message.id} message={message} />
             ))}
             {isLoading && (
-              <div className="flex items-center space-x-2 text-gray-500">
-                <div className="w-2 h-2 bg-primary-600 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-primary-600 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                <div className="w-2 h-2 bg-primary-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                <span className="ml-2">AI is thinking...</span>
+              <div className="flex justify-start mb-6">
+                <div className="flex max-w-[80%] items-start space-x-3">
+                  {/* Avatar */}
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-gray-600">
+                    <Bot className="w-4 h-4 text-white" />
+                  </div>
+                  
+                  {/* Typing Indicator */}
+                  <div className="flex flex-col">
+                    <div className="px-4 py-3 rounded-2xl bg-white border border-gray-200">
+                      <div className="flex items-center space-x-2">
+                        <div className="flex space-x-1">
+                          <div className="w-2 h-2 bg-primary-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                          <div className="w-2 h-2 bg-primary-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                          <div className="w-2 h-2 bg-primary-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                        </div>
+                        <span className="text-sm text-gray-500">AI is thinking...</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
             <div ref={messagesEndRef} />

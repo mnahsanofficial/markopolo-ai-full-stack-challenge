@@ -20,96 +20,82 @@ export async function POST(request: NextRequest) {
           const recommendation = generateCampaignRecommendation(message, dataSources, channels)
           
           // Build the complete formatted response
-          let fullResponse = ""
+          const fullResponse = `🔍 **Analyzing your request and connected data sources...**
+
+Based on your connected data sources and selected channels, here's my **AI-powered campaign recommendation**:
+
+## 🎯 **Campaign: ${recommendation.name}**
+
+> ${recommendation.description}
+
+### 👥 **Target Audience**
+
+**Segments:**
+${recommendation.targetAudience.segments.map(segment => `- ${segment}`).join('\n')}
+
+**Demographics:**
+${Object.entries(recommendation.targetAudience.demographics).map(([key, value]) => `- **${key.charAt(0).toUpperCase() + key.slice(1)}**: ${value}`).join('\n')}
+
+**Behaviors:**
+${recommendation.targetAudience.behaviors.map(behavior => `- ${behavior}`).join('\n')}
+
+### ⏰ **Optimal Timing**
+
+**Best Times:**
+${recommendation.timing.optimalTimes.map(time => `- ${time}`).join('\n')}
+- **Frequency**: ${recommendation.timing.frequency}
+- **Duration**: ${recommendation.timing.duration}
+
+### 📱 **Channel Strategy**
+
+- **Primary Channel**: ${recommendation.channels.primary}
+- **Secondary Channels**: ${recommendation.channels.secondary.join(', ')}
+
+**Budget Allocation:**
+${Object.entries(recommendation.channels.budget).map(([channel, amount]) => `- **${channel}**: $${amount.toLocaleString()}`).join('\n')}
+
+### 📝 **Content Strategy**
+
+${recommendation.content.subject ? `- **Subject Line**: "${recommendation.content.subject}"` : ''}
+- **Headline**: "${recommendation.content.headline}"
+- **Body**: "${recommendation.content.body}"
+- **Call-to-Action**: "${recommendation.content.cta}"
+
+### 📊 **Expected Performance**
+
+| Metric | Value |
+|--------|-------|
+| **Reach** | ${recommendation.metrics.expectedReach.toLocaleString()} users |
+| **Engagement Rate** | ${recommendation.metrics.expectedEngagement}% |
+| **Conversion Rate** | ${recommendation.metrics.expectedConversion}% |
+
+### 🚀 **Executable Campaign JSON**
+
+\`\`\`json
+${JSON.stringify(recommendation, null, 2)}
+\`\`\`
+
+> 💡 **Ready to Execute**: This JSON payload can be directly used to execute the campaign across your selected channels and data sources. Simply copy the JSON and integrate it with your marketing automation platform.`
+
+          // Stream the response character by character like ChatGPT
+          let currentContent = ""
+          const words = fullResponse.split(' ')
           
-          // Initial response
-          fullResponse += "🔍 **Analyzing your request and connected data sources...**\n\n"
-          sendChunk({ content: fullResponse })
-          await new Promise(resolve => setTimeout(resolve, 1000))
-
-          // Add main recommendation
-          fullResponse += "Based on your connected data sources and selected channels, here's my **AI-powered campaign recommendation**:\n\n"
-          sendChunk({ content: fullResponse })
-          await new Promise(resolve => setTimeout(resolve, 800))
-
-          // Add campaign header
-          fullResponse += `## 🎯 **Campaign: ${recommendation.name}**\n\n`
-          sendChunk({ content: fullResponse })
-          await new Promise(resolve => setTimeout(resolve, 500))
-
-          // Add description
-          fullResponse += `> ${recommendation.description}\n\n`
-          sendChunk({ content: fullResponse })
-          await new Promise(resolve => setTimeout(resolve, 600))
-
-          // Add target audience
-          fullResponse += "### 👥 **Target Audience**\n\n"
-          fullResponse += "**Segments:**\n"
-          recommendation.targetAudience.segments.forEach((segment) => {
-            fullResponse += `- ${segment}\n`
-          })
-          fullResponse += "\n**Demographics:**\n"
-          Object.entries(recommendation.targetAudience.demographics).forEach(([key, value]) => {
-            fullResponse += `- **${key.charAt(0).toUpperCase() + key.slice(1)}**: ${value}\n`
-          })
-          fullResponse += "\n**Behaviors:**\n"
-          recommendation.targetAudience.behaviors.forEach((behavior) => {
-            fullResponse += `- ${behavior}\n`
-          })
-          sendChunk({ content: fullResponse })
-          await new Promise(resolve => setTimeout(resolve, 400))
-
-          // Add timing
-          fullResponse += "\n### ⏰ **Optimal Timing**\n\n"
-          fullResponse += "**Best Times:**\n"
-          recommendation.timing.optimalTimes.forEach((time) => {
-            fullResponse += `- ${time}\n`
-          })
-          fullResponse += `- **Frequency**: ${recommendation.timing.frequency}\n`
-          fullResponse += `- **Duration**: ${recommendation.timing.duration}\n\n`
-          sendChunk({ content: fullResponse })
-          await new Promise(resolve => setTimeout(resolve, 400))
-
-          // Add channel strategy
-          fullResponse += "### 📱 **Channel Strategy**\n\n"
-          fullResponse += `- **Primary Channel**: ${recommendation.channels.primary}\n`
-          fullResponse += `- **Secondary Channels**: ${recommendation.channels.secondary.join(', ')}\n\n`
-          fullResponse += "**Budget Allocation:**\n"
-          Object.entries(recommendation.channels.budget).forEach(([channel, amount]) => {
-            fullResponse += `- **${channel}**: $${amount.toLocaleString()}\n`
-          })
-          sendChunk({ content: fullResponse })
-          await new Promise(resolve => setTimeout(resolve, 400))
-
-          // Add content strategy
-          fullResponse += "\n### 📝 **Content Strategy**\n\n"
-          if (recommendation.content.subject) {
-            fullResponse += `- **Subject Line**: "${recommendation.content.subject}"\n`
+          for (let i = 0; i < words.length; i++) {
+            currentContent += (i > 0 ? ' ' : '') + words[i]
+            sendChunk({ content: currentContent })
+            
+            // Variable delay based on content type
+            const word = words[i]
+            let delay = 50 // Base delay
+            
+            if (word.includes('\n')) delay = 200 // Longer pause for line breaks
+            if (word.includes('##') || word.includes('###')) delay = 300 // Pause for headers
+            if (word.includes('```')) delay = 150 // Pause for code blocks
+            if (word.includes('|')) delay = 100 // Pause for tables
+            
+            await new Promise(resolve => setTimeout(resolve, delay))
           }
-          fullResponse += `- **Headline**: "${recommendation.content.headline}"\n`
-          fullResponse += `- **Body**: "${recommendation.content.body}"\n`
-          fullResponse += `- **Call-to-Action**: "${recommendation.content.cta}"\n\n`
-          sendChunk({ content: fullResponse })
-          await new Promise(resolve => setTimeout(resolve, 400))
-
-          // Add performance metrics
-          fullResponse += "### 📊 **Expected Performance**\n\n"
-          fullResponse += `| Metric | Value |\n|--------|-------|\n`
-          fullResponse += `| **Reach** | ${recommendation.metrics.expectedReach.toLocaleString()} users |\n`
-          fullResponse += `| **Engagement Rate** | ${recommendation.metrics.expectedEngagement}% |\n`
-          fullResponse += `| **Conversion Rate** | ${recommendation.metrics.expectedConversion}% |\n\n`
-          sendChunk({ content: fullResponse })
-          await new Promise(resolve => setTimeout(resolve, 400))
-
-          // Add JSON payload
-          fullResponse += "### 🚀 **Executable Campaign JSON**\n\n"
-          fullResponse += "```json\n"
-          fullResponse += JSON.stringify(recommendation, null, 2)
-          fullResponse += "\n```\n\n"
-          fullResponse += "> 💡 **Ready to Execute**: This JSON payload can be directly used to execute the campaign across your selected channels and data sources. Simply copy the JSON and integrate it with your marketing automation platform.\n\n"
-          
-          sendChunk({ content: fullResponse })
-          await new Promise(resolve => setTimeout(resolve, 500))
           
           // End the stream
           sendChunk({ content: "[DONE]" })

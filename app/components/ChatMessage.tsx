@@ -119,8 +119,12 @@ export default function ChatMessage({ message }: ChatMessageProps) {
                 </ReactMarkdown>
                 {message.isStreaming && (
                   <div className="flex items-center space-x-2 mt-2">
-                    <div className="w-2 h-2 bg-primary-600 rounded-full animate-pulse"></div>
-                    <span className="text-sm text-gray-500">AI is thinking...</span>
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-primary-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                      <div className="w-2 h-2 bg-primary-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                      <div className="w-2 h-2 bg-primary-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                    </div>
+                    <span className="text-sm text-gray-500">AI is typing...</span>
                   </div>
                 )}
               </div>
