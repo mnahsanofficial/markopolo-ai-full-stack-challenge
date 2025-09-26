@@ -172,8 +172,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 The application is now live and ready to use! Try connecting data sources and channels, then ask for campaign recommendations.
 
-## Screenshots
-
-![Chat Interface](screenshots/chat-interface.png)
-![Data Sources](screenshots/data-sources.png)
-![Channel Selection](screenshots/channels.png)
