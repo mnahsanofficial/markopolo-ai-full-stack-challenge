@@ -39,72 +39,74 @@ export default function Home() {
     setInputValue('')
     setIsLoading(true)
 
-    try {
-      // Simulate streaming response
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: inputValue,
-          dataSources: connectedDataSources,
-          channels: selectedChannels,
-        }),
-      })
+      try {
+        // Simulate streaming response
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            message: inputValue,
+            dataSources: connectedDataSources,
+            channels: selectedChannels,
+          }),
+        })
 
-      if (!response.body) return
+        if (!response.body) return
 
-      const reader = response.body.getReader()
-      const decoder = new TextDecoder()
-      let assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: '',
-        role: 'assistant',
-        timestamp: new Date(),
-        isStreaming: true,
-      }
+        const reader = response.body.getReader()
+        const decoder = new TextDecoder()
+        let assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          content: '',
+          role: 'assistant',
+          timestamp: new Date(),
+          isStreaming: true,
+        }
 
-      setMessages(prev => [...prev, assistantMessage])
+        setMessages(prev => [...prev, assistantMessage])
 
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
 
-        const chunk = decoder.decode(value)
-        const lines = chunk.split('\n')
+          const chunk = decoder.decode(value)
+          const lines = chunk.split('\n')
 
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const data = line.slice(6)
-            if (data === '[DONE]') {
-              setMessages(prev => 
-                prev.map(msg => 
-                  msg.id === assistantMessage.id 
-                    ? { ...msg, isStreaming: false }
-                    : msg
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6)
+              if (data === '[DONE]') {
+                setMessages(prev => 
+                  prev.map(msg => 
+                    msg.id === assistantMessage.id 
+                      ? { ...msg, isStreaming: false }
+                      : msg
+                  )
                 )
-              )
-              return
-            }
+                return
+              }
 
-            try {
-              const parsed = JSON.parse(data)
-              assistantMessage.content += parsed.content || ''
-              setMessages(prev => 
-                prev.map(msg => 
-                  msg.id === assistantMessage.id 
-                    ? { ...msg, content: assistantMessage.content }
-                    : msg
-                )
-              )
-            } catch (e) {
-              // Ignore parsing errors for incomplete chunks
+              try {
+                const parsed = JSON.parse(data)
+                if (parsed.content) {
+                  assistantMessage.content = parsed.content
+                  setMessages(prev => 
+                    prev.map(msg => 
+                      msg.id === assistantMessage.id 
+                        ? { ...msg, content: assistantMessage.content }
+                        : msg
+                    )
+                  )
+                }
+              } catch (e) {
+                // Ignore parsing errors for incomplete chunks
+              }
             }
           }
         }
-      }
-    } catch (error) {
+      } catch (error) {
       console.error('Error sending message:', error)
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),

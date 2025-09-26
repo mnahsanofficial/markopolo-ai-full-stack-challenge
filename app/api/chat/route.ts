@@ -77,7 +77,7 @@ ${JSON.stringify(recommendation, null, 2)}
 
 > 💡 **Ready to Execute**: This JSON payload can be directly used to execute the campaign across your selected channels and data sources. Simply copy the JSON and integrate it with your marketing automation platform.`
 
-          // Stream the response character by character like ChatGPT
+          // Stream the response word by word like ChatGPT
           let currentContent = ""
           const words = fullResponse.split(' ')
           
@@ -87,17 +87,17 @@ ${JSON.stringify(recommendation, null, 2)}
             
             // Variable delay based on content type
             const word = words[i]
-            let delay = 50 // Base delay
+            let delay = 30 // Base delay
             
-            if (word.includes('\n')) delay = 200 // Longer pause for line breaks
-            if (word.includes('##') || word.includes('###')) delay = 300 // Pause for headers
-            if (word.includes('```')) delay = 150 // Pause for code blocks
-            if (word.includes('|')) delay = 100 // Pause for tables
+            if (word.includes('\n')) delay = 100 // Longer pause for line breaks
+            if (word.includes('##') || word.includes('###')) delay = 150 // Pause for headers
+            if (word.includes('```')) delay = 80 // Pause for code blocks
+            if (word.includes('|')) delay = 50 // Pause for tables
             
             await new Promise(resolve => setTimeout(resolve, delay))
           }
           
-          // End the stream
+          // Send final completion signal
           sendChunk({ content: "[DONE]" })
           controller.close()
         }
