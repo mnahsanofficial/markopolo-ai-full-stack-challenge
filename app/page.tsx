@@ -206,7 +206,7 @@ export default function Home() {
             {messages.map((message) => (
               <ChatMessage key={message.id} message={message} />
             ))}
-            {isLoading && (
+            {isLoading && !messages.some(msg => msg.isStreaming) && (
               <div className="flex justify-start mb-6">
                 <div className="flex max-w-[80%] items-start space-x-3">
                   {/* Avatar */}

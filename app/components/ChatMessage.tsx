@@ -62,12 +62,22 @@ export default function ChatMessage({ message }: ChatMessageProps) {
                       
                       if (!isInline && language) {
                         return (
-                          <div className="my-4">
+                          <div className="my-4 overflow-x-auto">
                             <SyntaxHighlighter
                               style={oneDark}
                               language={language}
                               PreTag="div"
-                              className="rounded-lg"
+                              className="rounded-lg !bg-gray-900 !p-4"
+                              customStyle={{
+                                margin: 0,
+                                borderRadius: '0.5rem',
+                                backgroundColor: '#1f2937',
+                                padding: '1rem',
+                                fontSize: '0.875rem',
+                                lineHeight: '1.5',
+                                overflow: 'auto',
+                                maxWidth: '100%'
+                              }}
                               {...props}
                             >
                               {String(children).replace(/\n$/, '')}
