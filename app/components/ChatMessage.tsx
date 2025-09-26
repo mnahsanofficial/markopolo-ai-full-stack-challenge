@@ -47,7 +47,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
             isUser 
               ? 'bg-primary-600 text-white' 
               : 'bg-white border border-gray-200 text-gray-900'
-          } ${!isUser ? 'max-w-[600px]' : ''}`}>
+          } ${!isUser ? 'max-w-[650px]' : ''}`}>
             {isUser ? (
               <div className="whitespace-pre-wrap">{message.content}</div>
             ) : (
