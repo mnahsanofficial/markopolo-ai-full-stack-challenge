@@ -16,107 +16,100 @@ export async function POST(request: NextRequest) {
         }
 
         const simulateStreaming = async () => {
-          // Initial response
-          sendChunk({ content: "🔍 **Analyzing your request and connected data sources...**\n\n" })
-          await new Promise(resolve => setTimeout(resolve, 1000))
-
           // Generate campaign recommendation based on data sources and channels
           const recommendation = generateCampaignRecommendation(message, dataSources, channels)
           
-          // Stream the recommendation with better formatting
-          sendChunk({ content: "Based on your connected data sources and selected channels, here's my **AI-powered campaign recommendation**:\n\n" })
+          // Build the complete formatted response
+          let fullResponse = ""
+          
+          // Initial response
+          fullResponse += "🔍 **Analyzing your request and connected data sources...**\n\n"
+          sendChunk({ content: fullResponse })
+          await new Promise(resolve => setTimeout(resolve, 1000))
+
+          // Add main recommendation
+          fullResponse += "Based on your connected data sources and selected channels, here's my **AI-powered campaign recommendation**:\n\n"
+          sendChunk({ content: fullResponse })
           await new Promise(resolve => setTimeout(resolve, 800))
 
-          sendChunk({ content: `## 🎯 **Campaign: ${recommendation.name}**\n\n` })
+          // Add campaign header
+          fullResponse += `## 🎯 **Campaign: ${recommendation.name}**\n\n`
+          sendChunk({ content: fullResponse })
           await new Promise(resolve => setTimeout(resolve, 500))
 
-          sendChunk({ content: `> ${recommendation.description}\n\n` })
+          // Add description
+          fullResponse += `> ${recommendation.description}\n\n`
+          sendChunk({ content: fullResponse })
           await new Promise(resolve => setTimeout(resolve, 600))
 
-          sendChunk({ content: "### 👥 **Target Audience**\n\n" })
-          await new Promise(resolve => setTimeout(resolve, 300))
-          sendChunk({ content: "**Segments:**\n" })
-          recommendation.targetAudience.segments.forEach((segment, index) => {
-            sendChunk({ content: `- ${segment}\n` })
+          // Add target audience
+          fullResponse += "### 👥 **Target Audience**\n\n"
+          fullResponse += "**Segments:**\n"
+          recommendation.targetAudience.segments.forEach((segment) => {
+            fullResponse += `- ${segment}\n`
           })
-          await new Promise(resolve => setTimeout(resolve, 200))
-          
-          sendChunk({ content: "\n**Demographics:**\n" })
+          fullResponse += "\n**Demographics:**\n"
           Object.entries(recommendation.targetAudience.demographics).forEach(([key, value]) => {
-            sendChunk({ content: `- **${key.charAt(0).toUpperCase() + key.slice(1)}**: ${value}\n` })
+            fullResponse += `- **${key.charAt(0).toUpperCase() + key.slice(1)}**: ${value}\n`
           })
-          await new Promise(resolve => setTimeout(resolve, 200))
-          
-          sendChunk({ content: "\n**Behaviors:**\n" })
-          recommendation.targetAudience.behaviors.forEach((behavior, index) => {
-            sendChunk({ content: `- ${behavior}\n` })
+          fullResponse += "\n**Behaviors:**\n"
+          recommendation.targetAudience.behaviors.forEach((behavior) => {
+            fullResponse += `- ${behavior}\n`
           })
+          sendChunk({ content: fullResponse })
           await new Promise(resolve => setTimeout(resolve, 400))
 
-          sendChunk({ content: "\n### ⏰ **Optimal Timing**\n\n" })
-          await new Promise(resolve => setTimeout(resolve, 300))
-          sendChunk({ content: "**Best Times:**\n" })
-          recommendation.timing.optimalTimes.forEach((time, index) => {
-            sendChunk({ content: `- ${time}\n` })
+          // Add timing
+          fullResponse += "\n### ⏰ **Optimal Timing**\n\n"
+          fullResponse += "**Best Times:**\n"
+          recommendation.timing.optimalTimes.forEach((time) => {
+            fullResponse += `- ${time}\n`
           })
-          await new Promise(resolve => setTimeout(resolve, 200))
-          sendChunk({ content: `- **Frequency**: ${recommendation.timing.frequency}\n` })
-          await new Promise(resolve => setTimeout(resolve, 200))
-          sendChunk({ content: `- **Duration**: ${recommendation.timing.duration}\n\n` })
+          fullResponse += `- **Frequency**: ${recommendation.timing.frequency}\n`
+          fullResponse += `- **Duration**: ${recommendation.timing.duration}\n\n`
+          sendChunk({ content: fullResponse })
           await new Promise(resolve => setTimeout(resolve, 400))
 
-          sendChunk({ content: "### 📱 **Channel Strategy**\n\n" })
-          await new Promise(resolve => setTimeout(resolve, 300))
-          sendChunk({ content: `- **Primary Channel**: ${recommendation.channels.primary}\n` })
-          await new Promise(resolve => setTimeout(resolve, 200))
-          sendChunk({ content: `- **Secondary Channels**: ${recommendation.channels.secondary.join(', ')}\n\n` })
-          await new Promise(resolve => setTimeout(resolve, 200))
-          
-          sendChunk({ content: "**Budget Allocation:**\n" })
+          // Add channel strategy
+          fullResponse += "### 📱 **Channel Strategy**\n\n"
+          fullResponse += `- **Primary Channel**: ${recommendation.channels.primary}\n`
+          fullResponse += `- **Secondary Channels**: ${recommendation.channels.secondary.join(', ')}\n\n`
+          fullResponse += "**Budget Allocation:**\n"
           Object.entries(recommendation.channels.budget).forEach(([channel, amount]) => {
-            sendChunk({ content: `- **${channel}**: $${amount.toLocaleString()}\n` })
+            fullResponse += `- **${channel}**: $${amount.toLocaleString()}\n`
           })
+          sendChunk({ content: fullResponse })
           await new Promise(resolve => setTimeout(resolve, 400))
 
-          sendChunk({ content: "\n### 📝 **Content Strategy**\n\n" })
-          await new Promise(resolve => setTimeout(resolve, 300))
+          // Add content strategy
+          fullResponse += "\n### 📝 **Content Strategy**\n\n"
           if (recommendation.content.subject) {
-            sendChunk({ content: `- **Subject Line**: "${recommendation.content.subject}"\n` })
-            await new Promise(resolve => setTimeout(resolve, 200))
+            fullResponse += `- **Subject Line**: "${recommendation.content.subject}"\n`
           }
-          sendChunk({ content: `- **Headline**: "${recommendation.content.headline}"\n` })
-          await new Promise(resolve => setTimeout(resolve, 200))
-          sendChunk({ content: `- **Body**: "${recommendation.content.body}"\n` })
-          await new Promise(resolve => setTimeout(resolve, 200))
-          sendChunk({ content: `- **Call-to-Action**: "${recommendation.content.cta}"\n\n` })
+          fullResponse += `- **Headline**: "${recommendation.content.headline}"\n`
+          fullResponse += `- **Body**: "${recommendation.content.body}"\n`
+          fullResponse += `- **Call-to-Action**: "${recommendation.content.cta}"\n\n`
+          sendChunk({ content: fullResponse })
           await new Promise(resolve => setTimeout(resolve, 400))
 
-          sendChunk({ content: "### 📊 **Expected Performance**\n\n" })
-          await new Promise(resolve => setTimeout(resolve, 300))
-          sendChunk({ content: `| Metric | Value |\n|--------|-------|\n` })
-          await new Promise(resolve => setTimeout(resolve, 200))
-          sendChunk({ content: `| **Reach** | ${recommendation.metrics.expectedReach.toLocaleString()} users |\n` })
-          await new Promise(resolve => setTimeout(resolve, 200))
-          sendChunk({ content: `| **Engagement Rate** | ${recommendation.metrics.expectedEngagement}% |\n` })
-          await new Promise(resolve => setTimeout(resolve, 200))
-          sendChunk({ content: `| **Conversion Rate** | ${recommendation.metrics.expectedConversion}% |\n\n` })
+          // Add performance metrics
+          fullResponse += "### 📊 **Expected Performance**\n\n"
+          fullResponse += `| Metric | Value |\n|--------|-------|\n`
+          fullResponse += `| **Reach** | ${recommendation.metrics.expectedReach.toLocaleString()} users |\n`
+          fullResponse += `| **Engagement Rate** | ${recommendation.metrics.expectedEngagement}% |\n`
+          fullResponse += `| **Conversion Rate** | ${recommendation.metrics.expectedConversion}% |\n\n`
+          sendChunk({ content: fullResponse })
           await new Promise(resolve => setTimeout(resolve, 400))
 
-          // Stream the JSON payload with proper formatting
-          sendChunk({ content: "### 🚀 **Executable Campaign JSON**\n\n" })
+          // Add JSON payload
+          fullResponse += "### 🚀 **Executable Campaign JSON**\n\n"
+          fullResponse += "```json\n"
+          fullResponse += JSON.stringify(recommendation, null, 2)
+          fullResponse += "\n```\n\n"
+          fullResponse += "> 💡 **Ready to Execute**: This JSON payload can be directly used to execute the campaign across your selected channels and data sources. Simply copy the JSON and integrate it with your marketing automation platform.\n\n"
+          
+          sendChunk({ content: fullResponse })
           await new Promise(resolve => setTimeout(resolve, 500))
-          
-          sendChunk({ content: "```json\n" })
-          const jsonPayload = JSON.stringify(recommendation, null, 2)
-          const jsonLines = jsonPayload.split('\n')
-          
-          for (const line of jsonLines) {
-            sendChunk({ content: `${line}\n` })
-            await new Promise(resolve => setTimeout(resolve, 30))
-          }
-          sendChunk({ content: "\n```\n\n" })
-
-          sendChunk({ content: "> 💡 **Ready to Execute**: This JSON payload can be directly used to execute the campaign across your selected channels and data sources. Simply copy the JSON and integrate it with your marketing automation platform.\n\n" })
           
           // End the stream
           sendChunk({ content: "[DONE]" })
