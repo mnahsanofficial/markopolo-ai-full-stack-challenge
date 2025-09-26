@@ -38,8 +38,8 @@ A modern chat interface similar to Perplexity that allows users to connect to va
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/perplexity-chat-clone.git
-cd perplexity-chat-clone
+https://github.com/mnahsanofficial/markopolo-ai-full-stack-challenge.git
+cd markopolo-ai-full-stack-challenge
 ```
 
 2. Install dependencies:
