@@ -60,11 +60,12 @@ export default function ChatMessage({ message }: ChatMessageProps) {
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   components={{
-                    code({ node, inline, className, children, ...props }) {
+                    code({ className, children, ...props }: any) {
                       const match = /language-(\w+)/.exec(className || '')
                       const language = match ? match[1] : ''
+                      const isInline = !match
                       
-                      if (!inline && language) {
+                      if (!isInline && language) {
                         return (
                           <div className="my-4">
                             <SyntaxHighlighter
