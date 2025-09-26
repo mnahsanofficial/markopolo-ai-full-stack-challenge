@@ -168,7 +168,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Demo
 
-Visit the live demo at: [https://your-demo-url.com](https://your-demo-url.com)
+🎉 **Live Demo**: [https://chat-sample-hb46ot4rb-mnahsanofficials-projects.vercel.app](https://chat-sample-hb46ot4rb-mnahsanofficials-projects.vercel.app)
+
+The application is now live and ready to use! Try connecting data sources and channels, then ask for campaign recommendations.
 
 ## Screenshots
 
